@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: Spring_Backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: doquanghuy401181
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    image: spring-backend:latest
+    container_name: spring-backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Spring_Backend
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: doquanghuy401181
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    image: react-frontend:latest
+    container_name: react-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  pgdata:
